@@ -8,11 +8,11 @@ INSERT INTO department (id, dept_name)
 
 INSERT INTO role (id, title, department_id)
     VALUES
-        (001, "Human Resources Representative", 01),
-        (002, "Human Resources Manager", 01),
+        (001, "HR Representative", 01),
+        (002, "HR Manager", 01),
         (003, "Sales Representative", 02),
         (004, "Sales Manager", 02),
-        (005, "Customer Service Representative", 03),
+        (005, "CS Representative", 03),
         (006, "Customer Service Manager", 03);
 
 INSERT INTO employee (id, first_name, last_name, role_id, manager_id)
