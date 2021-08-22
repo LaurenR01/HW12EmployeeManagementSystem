@@ -12,7 +12,7 @@ app.use(express.urlencoded({extended:false}));
 app.use(express.json());
 
 app.listen(PORT, () => {
-    console.log(`Listening on PORT: ${PORT} `);
+    console.log(`Listening on PORT: ${PORT}`);
     mainMenu();
 });
 
