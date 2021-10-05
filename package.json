@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/LaurenR01/HW12EmployeeManagementSystem#readme",
   "dependencies": {
+    "express": "^4.17.1",
     "inquirer": "^8.1.2",
     "mysql": "^2.18.1"
   }

@@ -92,7 +92,7 @@ const viewAll = () =>{
 const viewAllByRole = () => {
     let roles = [];
     db.query('SELECT title FROM role', (err, results) =>{
-        for (i = 0; i < results.length; i++){
+        for (let i = 0; i < results.length; i++){
             if(!roles.includes(results[i].title)){
                 roles.push(results[i].title);
             };
@@ -119,7 +119,7 @@ const viewAllByRole = () => {
 const viewAllByManager = () => {
     let managers = [];
     db.query('SELECT CONCAT(manager_name.first_name, " ", manager_name.last_name) AS Manager FROM employee INNER JOIN employee AS manager_name ON employee.manager_id = manager_name.id', (err, results) =>{
-        for (i = 0; i < results.length; i++){
+        for (let i = 0; i < results.length; i++){
             if(!managers.includes(results[i].Manager)){
                 managers.push(results[i].Manager);
             };
@@ -149,7 +149,7 @@ const viewAllByDepartment = () => {
     db.query('SELECT dept_name from department', (err, results) =>{
         console.log('Results');
         console.log(results);
-        for (i = 0, i < results.length; i++;){
+        for (let i = 0; i < results.length; i++){
             if(!depts.includes(results[i].Department)){
                 depts.push(results[i].Department);
             };
@@ -179,7 +179,7 @@ const viewSingle = () => {
     db.query('SELECT CONCAT(first_name, " ", last_name) AS Employee FROM employee', (err, results) =>{
         console.log('Results');
         console.log(results);
-        for (i = 0, i < results.length; i++;){
+        for (let i = 0; i < results.length; i++){
             if(!emps.includes(results[i].Employees)){
                 emps.push(results[i].Employees);
             };
@@ -206,7 +206,7 @@ const viewSingle = () => {
 const modifyRole = () => {
     const employeeList = [];
     db.query('SELECT CONCAT(first_name, " ", last_name) AS Employee FROM employee', (err, results) => {
-        for (i=0; i < results.length; i++){
+        for (let i=0; i < results.length; i++){
             if( !employeeList.includes(results[i].Employees)){
                 employeeList.push(results[i].Employees);
             };
@@ -221,7 +221,7 @@ const modifyRole = () => {
         ]).then ((answers) => {
             const empToModify = json.stringify(answer.whoToModify);
             db.query('SELECT title AS roleid from role', (err, results) => {
-                for (i = 0; i < results.length; i++){
+                for (let i = 0; i < results.length; i++){
                     if(!roles.includes(results[i].roleid)){
                       roles.push(results[i].roleid);
                     };
@@ -290,14 +290,14 @@ const addNew = () => {
 const addEmployee = () => {
     const roles = [];
     db.query('SELECT title AS roleid from role', (err, results) => {
-        for (i = 0; i < results.length; i++) {
+        for (let i = 0; i < results.length; i++) {
             if(!roles.includes(results[i].roleid)){
                 roles.push(results[i].roleid);
             };
         };
     const managers = [];
     db.query('SELECT CONCAT(manager_name.first_name, " ", manager_name.last_name) AS Manager FROM employee INNER JOIN employee AS manager_name ON employee.manager_id = manager_name.id', (err, results) => {
-        for (i = 0; i < results.length; i++) {
+        for (let i = 0; i < results.length; i++) {
             if(!managers.includes(results[i].Manager)){
                 managers.push(results[i].Manager);
             };
@@ -349,7 +349,7 @@ const addEmployee = () => {
 const addManager = () => {
     const roles = [];
     db.query('SELECT title AS roleid from role', (err, results) =>{
-        for (i = 0; i < results.length; i++) {
+        for (let i = 0; i < results.length; i++) {
         if(!roles.includes(results[i].roleid)){
             roles.push(results[i].roleid);
         };
