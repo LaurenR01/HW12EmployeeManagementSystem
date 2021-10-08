@@ -37,7 +37,7 @@ const mainMenu = () => {
             modifyRole();
             break;
           case "Add New Employee, Manager, or Department":
-            addMenu();
+            addNew();
             break;
             case "EXIT":
               exit();
@@ -205,7 +205,7 @@ const viewSingle = () => {
         type:'list',
         name:'whichEmp',
         message: "Which Employee would you like to view?",
-        choices: empList,
+        choices: emps,
         }, 
 
       ]).then ((answer) => {
@@ -236,7 +236,7 @@ const modifyRole = () => {
                 message: 'Which employee would you like to modify?',
                 choices: employeeList
             },
-        ]).then ((answers) => {
+        ]).then ((answer) => {
             const empToModify = json.stringify(answer.whoToModify);
             db.query('SELECT title AS roleid from role', (err, results) => {
                 for (let i = 0; i < results.length; i++){
@@ -256,15 +256,15 @@ const modifyRole = () => {
             const fullName = empToModify.replace(/"/g, "");
             const nameObject = fullName.split();
 
-            db.query('SELECT employee.id AS ID FROM employee WHERE first_name = ? AND last_name = ?', [nameObject[0], nameObject[1]],  (err, employeeid) => {
+            db.query('SELECT employee.id AS ID FROM employee WHERE first_name = ? AND last_name = ?', [nameObject[0], nameObject[1]],  (err, empID) => {
 
             const rolesID = roleToUpdate.replace(/"/g, "");
             db.query('SELECT id from role where title = ?', [rolesID], (err, rolNum) => {
-                r_id = (rolNum[0].id);
-                e_id = (empNum[0].ID);
+                role_id = (rolNum[0].id);
+                emp_id = (empID[0].ID);
 
 
-            db.query("UPDATE employee SET employee.role_? WHERE employee.is= ?", [r_id, e_id], (err, results) => {
+            db.query("UPDATE employee SET employee.role_? WHERE employee.is= ?", [role_id, emp_id], (err, results) => {
                 console.log("Employee Updated Successfully");
                 console.clear();
                 mainMenu();
@@ -283,6 +283,7 @@ const addNew = () => {
         {
         type: 'list',
         name: 'addWhich',
+        message: "Which would you like to add?",
         choices: [
             "Add a new employee",
             "Add a new manager",
