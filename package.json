@@ -1,5 +1,5 @@
 {
-  "name": "Employee Management System",
+  "name": "employee-management-system",
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
@@ -19,10 +19,7 @@
   },
   "homepage": "https://github.com/LaurenR01/HW12EmployeeManagementSystem#readme",
   "dependencies": {
-<<<<<<< HEAD
     "console.table": "^0.10.0",
-=======
->>>>>>> e1c82629ac25ec524b6181b2d60737cd20aa59b3
     "express": "^4.17.1",
     "inquirer": "^8.1.2",
     "mysql": "^2.18.1"

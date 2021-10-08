@@ -1,114 +1,121 @@
 const inquirer = require('inquirer');
 const mysql = require('mysql');
-const { exit } = require('process');
+
 const db = mysql.createConnection(
     {
         host: 'localhost',
         user: 'root',
         password: 'eXchange12!',
         database: 'ems_db'
+
     },
     console.log('Connected to the database.')
 );
 
 const mainMenu = () => {
-    inquirer.prompt([
-        {
-        type: 'list',
-        name: 'todo',
-        message: 'What would you like to do?',
-        choices: [
-         "View existing employee, manager, or department.",
-         "Modify employee role",
-         "Add new employee, manager, or department",
-         "Exit",  
+    inquirer
+    .prompt([
+      {
+      type:'list',
+      name:'todo',
+      message: "What would you like to do?",
+      choices: [
+        "View Existing Employee, Manager, or Department",
+        "Modify Employee Role",
+        "Add New Employee, Manager, or Department",
+        "Exit",
         ],
-
-    },
+      }, 
+      
     ]).then ((answer) => {
         switch (answer.todo) {
-            case "View existing employee, manager, or department.":
-                viewMenu();
-                break;
-            case "Modify employee role":
-                modifyRole();
-                break;
-            case "Add new employee, manager, or department":
-                addNew();
-                break;
-            case 'Exit':
-                Exit();
-                break;
+          case "View Existing Employee, Manager, or Department":
+            console.clear();
+            viewMenu();
+            break;
+          case "Modify Employee Role":
+            modifyRole();
+            break;
+          case "Add New Employee, Manager, or Department":
+            addMenu();
+            break;
+            case "EXIT":
+              exit();
+              break;
         }
-    })
-};
+    }) 
+}
 
 const viewMenu = () => {
-    inquirer.prompt([
-        {
-            type: 'list',
-            name: 'tasks',
-            message: 'What would you like to view?',
-            choices: [
-                "View all employees",
-                "View all employees in a specific role",
-                "View all employees assigned to a specific manager",
-                "View all employees in a specific department",
-                "View a single employee",
-            ],
-        },
-    ]).then((answers => {
-        switch (answers.tasks) {
-            case "View all employees":
-                console.clear();
-                viewAll();
-                break;
-            case "View all employees in a specific role":
-                viewAllByRole();
-                break;
-            case "View all employees assigned to a specific manager":
-                viewAllByManager();
-                break;
-            case "View all employees in a specific department":
-                viewAllByDepartment();
-                break;
-            case "View a single employee":
-                viewSingle();
-                break;
+    inquirer
+    .prompt([
+      {
+      type:'list',
+      name:'tasks',
+      message: "What would you like to view?",
+      choices: [
+        "View all Employees",
+        "View all Employees in a specific Role",
+        "View all Employees assigned to a specific Manager",
+        "View all Employees in a specific Department",
+        "View a Single Employee",  
+        ],
+      }, 
+    
+    ]).then ((answer) => {
+        switch (answer.tasks) {
+          case "View all Employees":
+            console.clear();
+            viewAll();
+            break;
+          case "View all Employees in a specific Role":
+            viewAllByRole();
+            break;
+          case "View all Employees assigned to a specific Manager":
+            viewAllByManager();
+            break;
+        case "View all Employees in a specific Department":
+            viewAllByDepartment();
+            break;
+        case "View a Single Employee":
+            viewSingle();
+            break;
         }
-    }))
-};
+    }) 
+  };
 
 const viewAll = () =>{
-  db .query('SELECT employee.id AS ID, CONCAT(first_name, " ", last_name) AS Employee, role.title AS Role, dept_name AS Department FROM role INNER JOIN employee ON role.id = employee.role_id INNER JOIN department ON role.department.id=department.id', (err, results) => {
-  console.log("");
-  console.log("All Employees");
-  console.table(results);
-  console.log("");
-  mainMenu();
-})
+    db.query('SELECT employee.id AS ID, CONCAT(first_name, " ", last_name) AS Employee, role.title AS Role, dept_name AS Department FROM role INNER JOIN employee ON role.id = employee.role_id INNER JOIN department ON role.department_id = department.id', function (err, results) {
+        console.log("");
+        console.log("All Employees:")
+        console.table(results);
+        console.log("");
+        mainMenu();
+      });
 };
 
 const viewAllByRole = () => {
-    let roles = [];
-    db.query('SELECT title FROM role', (err, results) =>{
-        for (let i = 0; i < results.length; i++){
-            if(!roles.includes(results[i].title)){
-                roles.push(results[i].title);
-            };
+    const roles = [];
+    db.query('SELECT title FROM role', function (err, results) {
+        for (i = 0; i < results.length; i++){
+          if(!roles.includes(results[i].title)){
+            roles.push(results[i].title);
+          };
         }
         console.clear();
-        inquirer.prompt([
-            {
-                type: 'list',
-                name: 'role',
-                message: 'Which role would you like to view?',
-                choices: roles,
-            },
-        ]).then((answers) =>{
-            dq.query('SELECT employee.id AS ID, CONCAT(first_name, " ", last_name) AS Employee, role.title AS Role, dept_name AS Department FROM role INNER JOIN employee ON role.id  = employee.role_id INNER JOIN department ON role.department_id = department.id WHERE role.title = ?', [answer.viewRole], (err, results) => {
+        inquirer
+        .prompt([
+          {
+          type:'list',
+          name:'whichRole',
+          message: "Which role would you like to view?",
+          choices: roleList
+          }, 
+        ]).then ((answer) => {
+    
+          db.query('SELECT employee.id AS ID, CONCAT(first_name, " ", last_name) AS Employee, role.title AS Role, dept_name AS Department FROM role INNER JOIN employee ON role.id = employee.role_id INNER JOIN department ON role.department_id = department.id WHERE role.title = ?', [answer.whichRole], function (err, results) {
+
             console.log("");
-            console.log(`Employees in the role ${answers.role}`);
             console.table(results);
             console.log("");
             mainMenu();
@@ -117,25 +124,28 @@ const viewAllByRole = () => {
     })
 };
 const viewAllByManager = () => {
-    let managers = [];
-    db.query('SELECT CONCAT(manager_name.first_name, " ", manager_name.last_name) AS Manager FROM employee INNER JOIN employee AS manager_name ON employee.manager_id = manager_name.id', (err, results) =>{
-        for (let i = 0; i < results.length; i++){
-            if(!managers.includes(results[i].Manager)){
-                managers.push(results[i].Manager);
-            };
+    const managers = [];
+    db.query('SELECT CONCAT(manager_name.first_name, " ", manager_name.last_name) AS Manager FROM employee INNER JOIN employee AS manager_name ON employee.manager_id = manager_name.id', function (err, results) {
+
+        for (i = 0; i < results.length; i++){
+          if(!managers.includes(results[i].Manager)){
+            managers.push(results[i].Manager);
+          };
         }
         console.clear();
-        inquirer.prompt([
-            {
-                type: 'list',
-                name: 'mgr',
-                message: 'Which manager would you like to view?',
-                choices: managers,
-            },
-        ]).then((answers) =>{
-            dq.query('SELECT CONCAT(employee.first_name, " ", employee.last_name) AS Employee, CONCAT (manager_name.first_name, " ", manager_name.last_name) AS Manager FROM employee INNER JOIN employee AS manager_name ON employee.manager_id = manager_name.id WHERE CONCAT (manager_name.first_name, " ", manager_name.last_name) = ?', [answer.mgr], (err, results) => {
+        inquirer
+        .prompt([
+          {
+          type:'list',
+          name:'whichManager',
+          message: "Which manager would you like to view?",
+          choices: managers,
+          }, 
+        ]).then ((answer) => {
+    
+          db.query('SELECT CONCAT(employee.first_name, " ", employee.last_name) AS Employee, CONCAT (manager_name.first_name, " ", manager_name.last_name) AS Manager FROM employee INNER JOIN employee AS manager_name ON employee.manager_id = manager_name.id WHERE CONCAT (manager_name.first_name, " ", manager_name.last_name) = ?', [answer.whichManager], function (err, results) {
+          
             console.log("");
-            console.log(`Employees who work for ${answers.mgr}`);
             console.table(results);
             console.log("");
             mainMenu();
@@ -146,29 +156,32 @@ const viewAllByManager = () => {
 
 const viewAllByDepartment = () => {
     let depts = [];
-    db.query('SELECT dept_name from department', (err, results) =>{
-        console.log('Results');
+    db.query('SELECT dept_name FROM department', function (err, results) {
+        console.log("results");
         console.log(results);
-        for (let i = 0; i < results.length; i++){
-            if(!depts.includes(results[i].Department)){
-                depts.push(results[i].Department);
-            };
+        console.log
+        for (i = 0; i < results.length; i++){
+          if(!depts.includes(results[i].dept_name)){
+            depts.push(results[i].dept_name);
+          };
         }
         console.clear();
-        inquirer.prompt([
-            {
-                type: 'list',
-                name: 'dept',
-                message: 'Which department would you like to view?',
-                choices: depts,
-            },
-        ]).then((answers) =>{
-            dq.query('SELECT employee.id AS ID, CONCAT(first_name, " ", last_name) AS Employee, dept_name AS Department FROM department, employee, role WHERE employee.manager_id=role.id   AND role.id=department.id AND dept_name = ?', [answer.depts], (err, results) => {
-            console.log("");
-            console.log(`Employees who work in ${answers.depts}`);
-            console.table(results);
-            console.log("");
-            mainMenu();
+        inquirer
+        .prompt([
+          {
+          type:'list',
+          name:'whichDept',
+          message: "Which department would you like to view?",
+          choices: depts,
+          }, 
+        ]).then ((answer) => {
+    
+          db.query('SELECT employee.id AS ID, CONCAT(first_name, " ", last_name) AS Employee, dept_name AS Department FROM department, employee, role WHERE employee.manager_id=role.id   AND role.id=department.id AND dept_name = ?', [answer.whichDept], function (err, results) {
+          
+          console.log("");
+          console.table(results);
+          console.log("");
+          mainMenu();
         })
     })
 })
@@ -176,28 +189,33 @@ const viewAllByDepartment = () => {
 
 const viewSingle = () => {
     let emps = [];
-    db.query('SELECT CONCAT(first_name, " ", last_name) AS Employee FROM employee', (err, results) =>{
-        console.log('Results');
+    db.query('SELECT CONCAT(first_name, " ", last_name) AS Employee FROM employee', function (err, results) {
+        console.log("results");
         console.log(results);
-        for (let i = 0; i < results.length; i++){
-            if(!emps.includes(results[i].Employees)){
-                emps.push(results[i].Employees);
-            };
+        console.log
+        for (i = 0; i < results.length; i++){
+          if(!emps.includes(results[i].Employee)){
+            emps.push(results[i].Employee);
+          };
         }
         console.clear();
-        inquirer.prompt([
-            {
-                type: 'list',
-                name: 'viewEmp',
-                message: 'Which employee would you like to view?',
-                choices: emps,
-            },
-        ]).then((answers) =>{
-            dq.query('SELECT CONCAT(employee.first_name, " ", employee.last_name) AS Employee, role.title AS Title, role.salary AS Salary, department.dept_name AS Department FROM department, employee, role WHERE employee.role_id=role.id AND role. department_id=department.id AND CONCAT(employee.first_name, " ", employee.last_name) = ?', [answer.emps], (err, results) => {
-            console.log("");
-            console.table(results);
-            console.log("");
-            mainMenu();
+        inquirer
+      .prompt([
+        {
+        type:'list',
+        name:'whichEmp',
+        message: "Which Employee would you like to view?",
+        choices: empList,
+        }, 
+
+      ]).then ((answer) => {
+  
+        db.query('SELECT CONCAT(employee.first_name, " ", employee.last_name) AS Employee, role.title AS Title, role.salary AS Salary, department.dept_name AS Department FROM department, employee, role WHERE employee.role_id=role.id AND role. department_id=department.id AND CONCAT(employee.first_name, " ", employee.last_name) = ?', [answer.whichEmp], function (err, results) {
+  
+        console.log("");
+        console.table(results);
+        console.log("");
+        mainMenu();
         })
     })
 })
@@ -206,11 +224,7 @@ const viewSingle = () => {
 const modifyRole = () => {
     const employeeList = [];
     db.query('SELECT CONCAT(first_name, " ", last_name) AS Employee FROM employee', (err, results) => {
-<<<<<<< HEAD
         for (let i = 0; i < results.length; i++){
-=======
-        for (let i=0; i < results.length; i++){
->>>>>>> e1c82629ac25ec524b6181b2d60737cd20aa59b3
             if( !employeeList.includes(results[i].Employees)){
                 employeeList.push(results[i].Employees);
             };
@@ -408,7 +422,7 @@ const addDepartment = () => {
         });
     };
 
-const Exit = () =>{
+const exit = () =>{
     console.clear();
     console.log("Goodbye");
     process.exit();
