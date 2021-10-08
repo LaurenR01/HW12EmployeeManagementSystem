@@ -206,7 +206,11 @@ const viewSingle = () => {
 const modifyRole = () => {
     const employeeList = [];
     db.query('SELECT CONCAT(first_name, " ", last_name) AS Employee FROM employee', (err, results) => {
+<<<<<<< HEAD
         for (let i = 0; i < results.length; i++){
+=======
+        for (let i=0; i < results.length; i++){
+>>>>>>> e1c82629ac25ec524b6181b2d60737cd20aa59b3
             if( !employeeList.includes(results[i].Employees)){
                 employeeList.push(results[i].Employees);
             };
